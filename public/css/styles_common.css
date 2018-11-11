@@ -3,19 +3,23 @@
   height: auto;
   background-color: #efefef;
   padding: 0.25em;
-  margin: 0.25em;
-  text-align: center;
+  margin: 0.5em;
   border-radius: 0.25em;
   border: 1px solid black;
 }
 
-.idea .name {
+.idea .idea-title {
   font-size: 1em;
   font-weight: bold;
 }
 
-.herokuConideaectDemo .data {
+.idea .idea-description {
+  font-size: 1em;
+}
+
+.idea .idea-id {
   font-size: 0.8em;
+  font-style: italic; 
 }
 
 .color-black {

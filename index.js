@@ -230,6 +230,7 @@ app.use((req, res, next) => {
     } else {
         ctx.logo_filename = 'cube_logo2.png'
     }
+    ctx.identity = req.session.identity
     ctx.updated_timedate = formatDate()
     req.cube_context = ctx
     next()
@@ -254,11 +255,18 @@ app.get('/ideas', (req, res) => {
 })
 
 /**
+ * Route for about.
+ */
+app.get('/about', (req, res) => {
+    res.render('about', req.cube_context)
+})
+
+/**
  * Route for logout.
  */
 app.get('/logout', (req, res) => {
     req.session.destroy()
-    res.redirect('/').end()
+    res.redirect('/')
 })
 
 /**
@@ -269,9 +277,16 @@ app.get('/json/user', (req, res) => {
 })
 
 /**
+ * Route for JSON response - payload.
+ */
+app.get('/json/payload', (req, res) => {
+    res.json(req.session.payload).end()
+})
+
+/**
  * Route for JSON response - identity.
  */
-app.get('/json/user', (req, res) => {
+app.get('/json/identity', (req, res) => {
     res.json(req.session.identity).end()
 })
 
@@ -280,7 +295,7 @@ app.use((err, req, res, next) => {
     const ctx = Object.assign({}, req.cube_context)
     ctx.error_msg = err.message
     ctx.error = err
-    res.status(500)
+    //res.status(500)
     res.render('error', ctx)
 })
 
