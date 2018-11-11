@@ -6,6 +6,7 @@ const nJwt = require('njwt')
 const njwk = require('node-jwk')
 const uuid = require('uuid/v4')
 const {Pool} = require('pg')
+const path = require('path')
 
 // configuration from environment
 const OAUTH_CLIENT_ID = process.env.OAUTH_CLIENT_ID
