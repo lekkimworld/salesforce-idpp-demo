@@ -269,7 +269,8 @@ app.post('/comment', (req, res) => {
     // get data from body
     const recordId = req.body.id
     const comment = req.body.comment
-
+    const uuid = uuid()
+    
     const url = `${req.session.identity.urls.rest.replace('{version}', '44.0')}sobjects/Comment_Event_Storage__c`
     fetch(url, {
         method: 'POST',
@@ -279,6 +280,7 @@ app.post('/comment', (req, res) => {
         },
         body: JSON.stringify({
             'Comment__c': comment,
+            'CommentId__c': uuid,
             'RecordId__c': recordId
         })
     }).then(res => {
