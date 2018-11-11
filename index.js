@@ -88,21 +88,22 @@ app.get('/oauth/callback', (req, res) => {
         const idtoken = payload.id_token
 
         // we need to verify the token before trusting it
-        return Promise.all([Promise.resolve(payload), verifyIDToken(idtoken)])
+        return Promise.all([Promise.resolve(payload), verifyIDToken(idtoken), fetchIdentity(payload.access_token, payload.id)])
 
     }).then(data => {
         const payload = data[0]
         const verifyResult = data[1]
+        const identity = data[2]
 
         // grab verify result and payload and store session
         req.session.user = verifyResult
         req.session.payload = payload
-        req.session.identity = JSON.parse(Buffer.from(req.session.payload.id_token, 'base64'))
+        req.session.identity = identity
         req.session.scopes = payload.scope.split(' ')
         req.session.save()
         console.log(verifyResult)
         console.log(payload)
-        console.log(req.session.identity)
+        console.log(identity)
 
         // redirect
         return res.redirect('/')
@@ -229,13 +230,27 @@ const verifyIDToken = idtoken => {
                 return reject(Error('Received JWT wasn\'t generated for us do we wont accept it!'))
             }
 
-            // yay!
+            // we verified the token
             resolve(verifyResult)
 
         }).catch(err => {
             return reject(err)
         })
     })
+}
+
+/**
+ * Method to get the identity of a user based on an access_token and id URL.
+ * 
+ * @param {String} access_token 
+ * @param {String} id 
+ */
+const fetchIdentity = (access_token, id) => {
+    return fetch(id, {
+        headers: {
+            'Authorization': `Bearer ${access_token}`
+        }
+    }).then(res => res.json())
 }
 
 // add termination listener
