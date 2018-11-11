@@ -1,5 +1,6 @@
 const express = require('express')
 const session = require('express-session')
+const moment = require('moment-timezone')
 const fetch = require('node-fetch')
 const FormData = require('form-data')
 const nJwt = require('njwt')
@@ -53,7 +54,12 @@ const db = (function() {
         return {
             'query': () => {
                 return Promise.resolve({
-                    rows: []
+                    rows: [{
+                        name: 'I-000001',
+                        id: '123456789012345a',
+                        'title__c': 'Make cubes round',
+                        'description__c': 'I really like cubes but really like them to be rounder. Maybe like an oval?'
+                    }]
                 })
             },
             'end': () => {}
@@ -139,6 +145,7 @@ app.use((req, res, next) => {
     } else {
         ctx.branding = '2'
     }
+    ctx.updated_timedate = formatDate()
     req.cube_context = ctx
     next()
 })
@@ -147,9 +154,19 @@ app.use((req, res, next) => {
  * Route for welcome page.
  */
 app.get('/', (req, res) => {
-    res.render('welcome', ctx)
+    res.render('welcome', req.cube_context)
 })
 
+/**
+ * Route to display ideas.
+ */
+app.get('/', (req, res) => {
+    const ctx = Object.assign({}, req.cube_context)
+    db.query('SELECT Id, Name, Title__c, Description__c FROM salesforce.Idea__c').then(rs => {
+        ctx.ideas = rs.rows
+        res.render('ideas', ctx)
+    })
+})
 
 /**
  * Route for logout.
@@ -160,33 +177,25 @@ app.get('/logout', (req, res) => {
 })
 
 /**
- * Route for HTML response.
+ * Route for JSON response - user.
  */
-app.get('/', (req, res) => {
-    // get user and start to build response
-    const user = req.session.user
-    let response = `<html><head><title>${user.body.name}</title></head><body><h1>Hello ${user.body.name}!</h1><ul>`
-
-    // if we got the web scope we can actually use the access_token to send the user 
-    // back to Salesforce (if not the access_token cannot be used for UI login)
-    if (req.session.scopes.includes('web')) {
-        response += `<li><a href="${req.session.payload.instance_url}/secur/frontdoor.jsp?sid=${req.session.payload.access_token}">Go to Salesforce</a></li>`
-    }
-
-    // if we got the api scope we can access Salesforce to get data on behalf of the user
-    if (req.session.scopes.includes('api')) {
-        response += `<li><a href="/recent">Show last 5 accessed records</a></li>`
-    }
-    response += `<li><a href="/logout">Logout</a></li>`
-    response += `</ul></body></html>\n`
-    res.send(response).end()
+app.get('/json/user', (req, res) => {
+    res.json(req.session.user).end()
 })
 
 /**
- * Route for JSON response.
+ * Route for JSON response - identity.
  */
-app.get('/json', (req, res) => {
-    res.json(req.session.user).end()
+app.get('/json/user', (req, res) => {
+    res.json(req.session.identity).end()
+})
+
+app.use((req, res, next, err) => {
+    // render error page
+    const ctx = Object.assign({}, req.cube_context)
+    ctx.error_msg = err.message
+    ctx.error = err
+    res.render('error', ctx)
 })
 
 // listen
@@ -253,9 +262,18 @@ const fetchIdentity = (access_token, id) => {
     }).then(res => res.json())
 }
 
+/**
+ * Utiltity method to format a date to a string format
+ * @param {*} date 
+ */
+const formatDate = (date) => {
+    let m = date && date['diff'] ? date : date ? moment(date) : moment()
+    return m.tz(process.env.TIMEZONE || 'Europe/Copenhagen').format(process.env.DATETIME_FORMAT || 'YYYY-M-D @ k:mm')
+}
+
 // add termination listener
 require('./terminate-listener.js')(() => {
 	console.log("Terminating services");
 	db.end()
 	console.log("Terminated services");
-});
+})
