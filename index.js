@@ -311,17 +311,12 @@ app.get('/about', (req, res) => {
  * Route for logout.
  */
 app.get('/logout', (req, res) => {
-    (function() {
-        if (req.session.wellknown_config && req.session.wellknown_config.end_session_endpoint) {
-            console.log(`Found wellknown-config with end_session_endpoint (${req.session.wellknown_config.end_session_endpoint}) so invoking it`)
-            return fetch(req.session.wellknown_config.end_session_endpoint)
-        } else {
-            return Promise.resolve()
-        }
-    })().then(() => {
-        req.session.destroy()
+    req.session.destroy()
+    if (req.session.wellknown_config && req.session.wellknown_config.end_session_endpoint) {
+        res.redirect(req.session.wellknown_config.end_session_endpoint)
+    } else {
         res.redirect('/')
-    })
+    }
 })
 
 /**
