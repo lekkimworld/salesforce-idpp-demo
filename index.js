@@ -127,14 +127,17 @@ app.use((req, res, next) => {
 })
 
 app.use((req, res, next) => {
+    if (!req.session || !req.session.payload || !req.session.payload.custom_attributes) return next(new Error('Missing payload in session'))
+    
     // build context
     let ctx = {}
-    if (req.session.user.custom_attributes.cube_branding === '0') {
+    if (req.session.payload.custom_attributes.cube_branding === '0') {
         ctx.branding = '1'
     } else {
         ctx.branding = '2'
     }
     req.cube_context = ctx
+    next()
 })
 
 /**
