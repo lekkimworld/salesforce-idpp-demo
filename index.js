@@ -296,28 +296,8 @@ app.post('/comment', (req, res) => {
  */
 app.post('/canvas', (req, res) => {
     // get data from body
-    const recordId = req.body.id
-    const comment = req.body.comment
-
-    const url = `${req.session.identity.urls.rest.replace('{version}', '44.0')}sobjects/Comment_Event_Storage__c`
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${req.session.payload.access_token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            'Comment__c': comment,
-            'RecordId__c': recordId
-        })
-    }).then(res => {
-        return res.json()
-    }).then(obj => {
-        res.status(201).send({
-            'status': 'OK',
-            'id': obj.id
-        })
-    })
+    console.log(req.body)
+    res.status(200).send('ok')
 })
 
 /**
@@ -345,6 +325,15 @@ app.get('/logout', (req, res) => {
 })
 
 /**
+ * Route for logout.
+ */
+app.get('/slo', (req, res) => {
+    console.log('slo received')
+    req.session.destroy()
+    res.redirect('/')
+})
+
+/**
  * Route for JSON response - user.
  */
 app.get('/json/user', (req, res) => {
@@ -368,7 +357,7 @@ app.get('/json/identity', (req, res) => {
 /**
  * Route for JSON response - wellknown config.
  */
-app.get('/json/wellknown_confg', (req, res) => {
+app.get('/json/wellknown_config', (req, res) => {
     res.json(req.session.wellknown_config).end()
 })
 
