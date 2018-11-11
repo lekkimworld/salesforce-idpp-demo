@@ -1,0 +1,15 @@
+<span class="clearfix">
+    <i class="float-left">Updated: {{updated}}</i>
+    <a href="" class="float-right color-black"><i class="fa fa-redo fa-2x" aria-hidden="true"></i></a>
+</span>
+<div class="row">
+    {{#each accountlist}}
+    <div class="col-lg-2 col-md-3 col-sm-4 herokuConnectDemo">
+        <div class="name">{{this.name}}</div>
+        <div class="data">Account no.: {{this.accountnumber}}</div>
+        <div class="data">Website: {{this.website}}</div>
+        <div class="data">Type: {{this.type}}</div>
+        <div class="data">Ticker: {{this.tickersymbol}}</div>
+    </div>
+    {{/each}}    
+</div>
