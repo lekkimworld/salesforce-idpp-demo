@@ -97,10 +97,12 @@ app.get('/oauth/callback', (req, res) => {
         // grab verify result and payload and store session
         req.session.user = verifyResult
         req.session.payload = payload
+        req.session.identity = JSON.parse(Buffer.from(req.session.payload.id_token, 'base64'))
         req.session.scopes = payload.scope.split(' ')
         req.session.save()
         console.log(verifyResult)
         console.log(payload)
+        console.log(req.session.identity)
 
         // redirect
         return res.redirect('/')
@@ -127,11 +129,11 @@ app.use((req, res, next) => {
 })
 
 app.use((req, res, next) => {
-    if (!req.session || !req.session.payload || !req.session.payload.custom_attributes) return next(new Error('Missing payload in session'))
-    
+    if (!req.session || !req.session.identity || !req.session.identity.custom_attributes) return next(new Error('Missing payload in session'))
+
     // build context
     let ctx = {}
-    if (req.session.payload.custom_attributes.cube_branding === '0') {
+    if (req.session.identity.custom_attributes.cube_branding === '0') {
         ctx.branding = '1'
     } else {
         ctx.branding = '2'
