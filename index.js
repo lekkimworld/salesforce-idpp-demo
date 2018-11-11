@@ -126,7 +126,7 @@ app.use((req, res, next) => {
     }
 })
 
-app.user((req, res, next) => {
+app.use((req, res, next) => {
     // build context
     let ctx = {}
     if (req.session.user.custom_attributes.cube_branding === '0') {
