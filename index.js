@@ -294,9 +294,10 @@ app.post('/comment', (req, res) => {
 /**
  * Route for Salesforce Canvas App
  */
-app.post('/canvas', (req, res) => {
+app.get('/canvas', (req, res) => {
     // get data from body
     console.log(req.body)
+    console.log(req.query.signed_request)
     res.status(200).send('ok')
 })
 
@@ -314,15 +315,6 @@ app.get('/logout', (req, res) => {
     const slo_url = req.session.wellknown_config && req.session.wellknown_config.end_session_endpoint ? req.session.wellknown_config.end_session_endpoint : '/'
     req.session.destroy()
     res.redirect(slo_url)
-})
-
-/**
- * Route for logout.
- */
-app.get('/slo', (req, res) => {
-    console.log('slo received')
-    req.session.destroy()
-    res.redirect('/')
 })
 
 /**
