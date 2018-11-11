@@ -190,11 +190,12 @@ app.get('/json/user', (req, res) => {
     res.json(req.session.identity).end()
 })
 
-app.use((req, res, next, err) => {
+app.use((err, req, res, next) => {
     // render error page
     const ctx = Object.assign({}, req.cube_context)
     ctx.error_msg = err.message
     ctx.error = err
+    res.status(500)
     res.render('error', ctx)
 })
 
