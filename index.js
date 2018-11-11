@@ -311,12 +311,9 @@ app.get('/about', (req, res) => {
  * Route for logout.
  */
 app.get('/logout', (req, res) => {
+    const slo_url = req.session.wellknown_config && req.session.wellknown_config.end_session_endpoint ? req.session.wellknown_config.end_session_endpoint : '/'
     req.session.destroy()
-    if (req.session.wellknown_config && req.session.wellknown_config.end_session_endpoint) {
-        res.redirect(req.session.wellknown_config.end_session_endpoint)
-    } else {
-        res.redirect('/')
-    }
+    res.redirect(slo_url)
 })
 
 /**
