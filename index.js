@@ -9,6 +9,7 @@ const uuid = require('uuid/v4')
 const {Pool} = require('pg')
 const path = require('path')
 const exphbs = require("express-handlebars")
+const bodyParser = require('body-parser')
 
 // configuration from environment
 const OAUTH_CLIENT_ID = process.env.OAUTH_CLIENT_ID
@@ -19,6 +20,7 @@ const SF_LOGIN_URL = process.env.SF_LOGIN_URL || 'https://login.salesforce.com'
 
 // configure app
 const app = express()
+app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, 'public')))
 app.engine('handlebars', exphbs({defaultLayout: 'main'}))
 app.set('view engine', 'handlebars')
@@ -56,7 +58,7 @@ const db = (function() {
                 return Promise.resolve({
                     rows: [{
                         name: 'I-000001',
-                        id: '123456789012345a',
+                        id: 'a001t000002Xx4LAAS',
                         'title__c': 'Make cubes round',
                         'description__c': 'I really like cubes but really like them to be rounder. Maybe like an oval?'
                     }]
@@ -255,6 +257,36 @@ app.get('/ideas', (req, res) => {
 })
 
 /**
+ * Route to post comment.
+ */
+app.post('/comment', (req, res) => {
+    // get data from body
+    const recordId = req.body.id
+    const comment = req.body.comment
+
+    const url = `${req.session.identity.urls.rest.replace('{version}', '44.0')}sobjects/Comment_Event_Storage__c`
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${req.session.payload.access_token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            //'Comment_Object_ID__c': recordId,
+            //'Comment__c': comment
+            'RecordId__c': recordId
+        })
+    }).then(res => {
+        return res.json()
+    }).then(obj => {
+        res.status(201).send({
+            'status': 'OK',
+            'id': obj.id
+        })
+    })
+})
+
+/**
  * Route for about.
  */
 app.get('/about', (req, res) => {
@@ -291,6 +323,9 @@ app.get('/json/identity', (req, res) => {
 })
 
 app.use((err, req, res, next) => {
+    // put on console
+    console.log(`Caught error: ${err.message}`, err)
+
     // render error page
     const ctx = Object.assign({}, req.cube_context)
     ctx.error_msg = err.message
