@@ -109,9 +109,15 @@ app.get('/oauth/callback', (req, res) => {
         req.session.identity = identity
         req.session.scopes = payload.scope.split(' ')
         req.session.save()
-        console.log(verifyResult)
-        console.log(payload)
-        console.log(identity)
+
+        // start process to load wellknown config
+        global.setImmediate(() => {
+            // get well known config
+            fetchWellknownConfig(identity.urls.custom_domain || payload.instance_url).then(config => {
+                req.session.wellknown_config = config
+                req.session.save()
+            })
+        })
 
         // redirect
         return res.redirect('/')
@@ -272,8 +278,36 @@ app.post('/comment', (req, res) => {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            //'Comment_Object_ID__c': recordId,
-            //'Comment__c': comment
+            'Comment__c': comment,
+            'RecordId__c': recordId
+        })
+    }).then(res => {
+        return res.json()
+    }).then(obj => {
+        res.status(201).send({
+            'status': 'OK',
+            'id': obj.id
+        })
+    })
+})
+
+/**
+ * Route for Salesforce Canvas App
+ */
+app.post('/canvas', (req, res) => {
+    // get data from body
+    const recordId = req.body.id
+    const comment = req.body.comment
+
+    const url = `${req.session.identity.urls.rest.replace('{version}', '44.0')}sobjects/Comment_Event_Storage__c`
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${req.session.payload.access_token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            'Comment__c': comment,
             'RecordId__c': recordId
         })
     }).then(res => {
@@ -297,8 +331,17 @@ app.get('/about', (req, res) => {
  * Route for logout.
  */
 app.get('/logout', (req, res) => {
-    req.session.destroy()
-    res.redirect('/')
+    (function() {
+        if (req.session.wellknown_config && req.session.wellknown_config.end_session_endpoint) {
+            console.log(`Found wellknown-config with end_session_endpoint (${req.session.wellknown_config.end_session_endpoint}) so invoking it`)
+            return fetch(req.session.wellknown_config.end_session_endpoint)
+        } else {
+            return Promise.resolve()
+        }
+    })().then(() => {
+        req.session.destroy()
+        res.redirect('/')
+    })
 })
 
 /**
@@ -320,6 +363,13 @@ app.get('/json/payload', (req, res) => {
  */
 app.get('/json/identity', (req, res) => {
     res.json(req.session.identity).end()
+})
+
+/**
+ * Route for JSON response - wellknown config.
+ */
+app.get('/json/wellknown_confg', (req, res) => {
+    res.json(req.session.wellknown_config).end()
 })
 
 app.use((err, req, res, next) => {
@@ -397,6 +447,17 @@ const fetchIdentity = (access_token, id) => {
         }
     }).then(res => res.json())
 }
+
+/**
+ * Load well-known config from base_url
+ * @param {*} base_url 
+ */
+const fetchWellknownConfig = base_url => {
+    return fetch(`${base_url}/.well-known/openid-configuration`).then(res => {
+        return res.json()
+    })
+}
+
 
 /**
  * Utiltity method to format a date to a string format
