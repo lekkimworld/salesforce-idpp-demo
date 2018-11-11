@@ -228,6 +228,10 @@ app.use((req, res, next) => {
 })
 
 app.use((req, res, next) => {
+    if (req.query.signed_request) {
+        console.log(req.query.signed_request)
+        return next()
+    }
     if (!req.session || !req.session.identity || !req.session.identity.custom_attributes) return next(new Error('Missing payload in session'))
 
     // build context
@@ -296,7 +300,7 @@ app.post('/comment', (req, res) => {
 /**
  * Route for Salesforce Canvas App
  */
-app.get('/canvas', (req, res) => {
+app.post('/canvas', (req, res) => {
     // get data from body
     console.log(req.body)
     console.log(req.query.signed_request)
