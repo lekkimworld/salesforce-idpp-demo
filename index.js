@@ -217,6 +217,11 @@ app.use((req, res, next) => {
  * Middleware to always make sure we have authenticated the user.
  */
 app.use((req, res, next) => {
+    if (req.query.signed_request) {
+        console.log(req.query.signed_request)
+        return next()
+    }
+    
     // see if there is a user object in the session
     if (!req.session.user) {
         // there is not - initiate authentication
