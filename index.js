@@ -121,6 +121,90 @@ app.get('/oauth/callback', (req, res) => {
     })
 })
 
+app.use((req, res, next) => {
+    if (process.env.BYPASS_AUTH) {
+        req.session.user = {
+            header: { typ: 'JWT', alg: 'RS256', kid: '216' },
+            body: {
+                at_hash: 'btzzYwv03uxO5XLFCYp4UA',
+                sub: 'https://login.salesforce.com/id/00D1t000000rXxREAU/0051t000001qjZ7AAI',
+                aud: '3MVG9fTLmJ60pJ5KS3EXllTxHn43nhbIpAwP9f46NM444ueQDU8pJFHFFfRqreMM0HTiCO.0yAEsfGKdkGfXn',
+                iss: 'https://login.salesforce.com',
+                exp: 1541968639,
+                iat: 1541968519
+            }
+        }
+        req.session.payload = {
+            access_token: '00D1t000000rXxR!AREAQL.ZVktPeK1rHnEkVQoPHKRohYTB.j002zdPRFn.LSf847SvUAnidj9_QBmG0T3TQ96rjBNKXZ7tWJJ8pPDps8Sa0Oq3',
+            signature: 'DvSMILcBmSmH4ZO6+XPxqD+rnNe6H0BheH8tB1+Nj9g=',
+            scope: 'openid api',
+            id_token: 'eyJraWQiOiIyMTYiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdF9oYXNoIjoiYnR6ell3djAzdXhPNVhMRkNZcDRVQSIsInN1YiI6Imh0dHBzOi8vbG9naW4uc2FsZXNmb3JjZS5jb20vaWQvMDBEMXQwMDAwMDByWHhSRUFVLzAwNTF0MDAwMDAxcWpaN0FBSSIsImF1ZCI6IjNNVkc5ZlRMbUo2MHBKNUtTM0VYbGxUeEhuNDNuaGJJcEF3UDlmNDZOTTQ0NHVlUURVOHBKRkhGRmZScXJlTU0wSFRpQ08uMHlBRXNmR0tka0dmWG4iLCJpc3MiOiJodHRwczovL2xvZ2luLnNhbGVzZm9yY2UuY29tIiwiZXhwIjoxNTQxOTY4NjM5LCJpYXQiOjE1NDE5Njg1MTl9.HOmwc1QwIhsyB_xLNvVgepk3kGwT2n3aYiFLChs_5FmYfquZ8SVYQ3-u24s8v5zr4bOXiHj5pMtkrdOGtZvlWk34RN6o3LflhQWun9TmS0NjGDZkMyEQdehaY68YSyvW2oDCuD17NpRepbxOU0-BDQPR588LakQ1J9dnlisL6pv7LKy8bwdTW7CWq0aj2NpYbdr5m2JgJxgfjL7slC-q7UCNHxS_rmS4279r3PKJGNPRDT3xQGwXt4fUdTcflx5bzz_iIz6dkdljP-l_UJyWzJKHBhri5IZgNQgPDRRXDnHJp_DohUSCXjgTVzy-oAHKOIUcj4EzUfDyRUxpoAr2FkU1-GfGCaByGJjtRxPDaSa97anLaNOUZXbGV9kHNmo1NrH7blPhWt2KOUxxonL0b8T38v5WZb2Qqyaa6A0x02W3KzbPXS2L0sqyhAQepZNJ2YZQvD8iZyyfh7iL408CgNToaX9NT-hKSAbBsuHvE2LU7rx7vlXJkp5dC1cNkWCiJ9WLr2T-_XCmi5IHSvIBxd705gATKrMuX2SVF9LlxHedb7gcEcnaE7u1VynoiIPnj1oBRGPxi0xw1AkUY19HkMR_zx03sdcsVoQjoAPl9A_APTz1ENgbsPoH-h37QLghOACljJGMURI9HWtiFQ1gcvxJo4VVDXED8zHxnqmhl9U',
+            instance_url: 'https://eu16.salesforce.com',
+            id: 'https://login.salesforce.com/id/00D1t000000rXxREAU/0051t000001qjZ7AAI',
+            token_type: 'Bearer',
+            issued_at: '1541968519421'
+        }
+        req.session.identity = { 
+            id: 'https://login.salesforce.com/id/00D1t000000rXxREAU/0051t000001qjZ7AAI',
+            asserted_user: true,
+            user_id: '0051t000001qjZ7AAI',
+            organization_id: '00D1t000000rXxREAU',
+            username: 'idpp@trailhead.com',
+            nick_name: 'idpp',
+            display_name: 'Mikkel Flindt Heisterberg',
+            email: 'mheisterberg@salesforce.com',
+            email_verified: false,
+            first_name: 'Mikkel Flindt',
+            last_name: 'Heisterberg',
+            timezone: 'Europe/Paris',
+            photos: {
+                picture: 'https://c.eu16.content.force.com/profilephoto/005/F',
+                thumbnail: 'https://c.eu16.content.force.com/profilephoto/005/T'
+            },
+            addr_street: null,
+            addr_city: null,
+            addr_state: null,
+            addr_country: 'DK',
+            addr_zip: null,
+            mobile_phone: null,
+            mobile_phone_verified: false,
+            is_lightning_login_user: false,
+            status: { created_date: null, body: null },
+            urls: {
+                enterprise: 'https://eu16.salesforce.com/services/Soap/c/{version}/00D1t000000rXxR',
+                metadata: 'https://eu16.salesforce.com/services/Soap/m/{version}/00D1t000000rXxR',
+                partner: 'https://eu16.salesforce.com/services/Soap/u/{version}/00D1t000000rXxR',
+                rest: 'https://eu16.salesforce.com/services/data/v{version}/',
+                sobjects: 'https://eu16.salesforce.com/services/data/v{version}/sobjects/',
+                search: 'https://eu16.salesforce.com/services/data/v{version}/search/',
+                query: 'https://eu16.salesforce.com/services/data/v{version}/query/',
+                recent: 'https://eu16.salesforce.com/services/data/v{version}/recent/',
+                tooling_soap: 'https://eu16.salesforce.com/services/Soap/T/{version}/00D1t000000rXxR',
+                tooling_rest: 'https://eu16.salesforce.com/services/data/v{version}/tooling/',
+                profile: 'https://eu16.salesforce.com/0051t000001qjZ7AAI',
+                feeds: 'https://eu16.salesforce.com/services/data/v{version}/chatter/feeds',
+                groups: 'https://eu16.salesforce.com/services/data/v{version}/chatter/groups',
+                users: 'https://eu16.salesforce.com/services/data/v{version}/chatter/users',
+                feed_items: 'https://eu16.salesforce.com/services/data/v{version}/chatter/feed-items',
+                feed_elements: 'https://eu16.salesforce.com/services/data/v{version}/chatter/feed-elements' 
+            },
+            active: true,
+            user_type: 'STANDARD',
+            language: 'en_US',
+            locale: 'da_DK',
+            utcOffset: 3600000,
+            last_modified_date: '2018-11-11T18:56:07Z',
+            is_app_installed: true,
+            custom_attributes: {
+                external_user: '0', 
+                cube_branding: '1' 
+            }
+        }
+        req.session.save()
+    }
+    next()
+})
+
 /**
  * Middleware to always make sure we have authenticated the user.
  */
@@ -141,9 +225,10 @@ app.use((req, res, next) => {
     // build context
     let ctx = {}
     if (req.session.identity.custom_attributes.cube_branding === '0') {
-        ctx.branding = '1'
+        ctx.branding1 = true
+        ctx.logo_filename = 'cube_logo1.png'
     } else {
-        ctx.branding = '2'
+        ctx.logo_filename = 'cube_logo2.png'
     }
     ctx.updated_timedate = formatDate()
     req.cube_context = ctx
@@ -160,7 +245,7 @@ app.get('/', (req, res) => {
 /**
  * Route to display ideas.
  */
-app.get('/', (req, res) => {
+app.get('/ideas', (req, res) => {
     const ctx = Object.assign({}, req.cube_context)
     db.query('SELECT Id, Name, Title__c, Description__c FROM salesforce.Idea__c').then(rs => {
         ctx.ideas = rs.rows
