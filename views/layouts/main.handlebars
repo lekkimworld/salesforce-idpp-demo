@@ -17,10 +17,12 @@
 	<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
 	 crossorigin="anonymous">
 	 <link href="/css/styles_common.css" rel="stylesheet" type="text/css" />
-	 {{#if branding1}}
-	<link href="/css/styles_branding1.css" rel="stylesheet" type="text/css" />
-	{{else}}
-	<link href="/css/styles_branding2.css" rel="stylesheet" type="text/css" />
+	 {{#if showMenu}}
+		{{#if branding1}}
+		<link href="/css/styles_branding1.css" rel="stylesheet" type="text/css" />
+		{{else}}
+		<link href="/css/styles_branding2.css" rel="stylesheet" type="text/css" />
+		{{/if}}
 	{{/if}}
 </head>
 
