@@ -220,10 +220,12 @@ app.use((req, res, next) => {
  */
 app.use((req, res, next) => {
     if (req.method === 'POST' && req.originalUrl === '/canvas') {
-        // body coming as text
+        // body coming as text but replace quotes to handle stange json from SF
         let payload
         try {
-            payload = JSON.parse(req.body.replace('signed_request:', '\'signed_request\':').replace(/'/g, '"'))
+            console.log(req.body)
+            console.log(req.body.replace('signed_request:', '\'signed_request\':').replace(/'/g, '"').replace(/\n/g, ''))
+            payload = JSON.parse(req.body.replace('signed_request:', '\'signed_request\':').replace(/'/g, '"').replace(/\n/g, ''))
         } catch (err) {
             return next(new Error('Unable to parse signed_request JSON', err))
         }
