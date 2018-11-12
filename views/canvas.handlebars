@@ -1,5 +1,48 @@
-<div class="row" id="ideas-container">
+<div class="row" id="comment-container">
     <div class="col-lg-11 col-md-11 col-sm-11 idea">
-        {{identity.display_name}}
+        <div class="row">
+            <div class="col-lg-2 col-md-4 col-sm-12">
+                <div class="idea-title">{{idea.title__c}}</div>
+            </div>
+            <div class="col-lg-9 col-md-8 col-sm-12">
+                <div class="idea-description">{{idea.description__c}}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-11 col-md-11 col-sm-11 idea"></div>
+        <div class="row">
+            <div class="col-lg-9 col-md-12 col-sm-12">
+                <div>{{comment.comment}} <span class="fa fa-comment fa-1x ideas-icon-color ideas-icon-border" aria-hidden="true">&nbsp;</span></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-9 col-md-12 col-sm-12">
+                <div>
+                    <a href="javascript:void(0)" id="{{comment.commentId}}" class="ideas-comment-link">Approve</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(() => {
+        $('#comment-container').on('click', (event) => {
+            // submit to server
+            const commentId = event.target.id
+            fetch(`/comment/approve`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'commentId': commentId
+                })
+            }).then(res => res.json()).then(result => {
+                if (result.status === 'OK') {
+                    event.target.parentNode.innerHTML = 'Approved'
+                }
+            })
+        )}
+    })
+</script>

@@ -13,8 +13,10 @@ const bodyParser = require('body-parser')
 
 // SQL
 const SELECT_IDEAS = 'SELECT sfid, name, title__c, description__c FROM salesforce.Idea__c'
+const SELECT_SINGLE_IDEA = 'SELECT sfid, name, title__c, description__c FROM salesforce.Idea__c WHERE sfid=$1'
 const SELECT_COMMENT_COUNT = 'select sfid, count(*) as count from comments.comment where sfid = ANY($1::character varying(18)[]) and approved=\'1\' group by sfid'
 const INSERT_COMMENT = 'insert into comments.comment (sfid, commentId, approved, comment) values ($1, $2, $3, $4)'
+const SELECT_SINGLE_COMMENT = 'select sfid, commentId, approved, comment from comments.comment where sfid=$1 AND commentId=$2'
 
 // configuration from environment
 const OAUTH_CLIENT_ID = process.env.OAUTH_CLIENT_ID
@@ -362,9 +364,34 @@ app.post('/canvas', (req, res, next) => {
     // must have context in session
     if (!req.session.canvasPayload) return next(new Error('No canvas context found in session'))
 
-    console.log(req.session.canvasPayload.context.environment.parameters)
-    res.render('canvas', req.cube_context)    
+    // get parameters
+    let params = req.session.canvasPayload.context.environment.parameters
+    let ideaId = params.ideaId
+    let commentId = params.commentId
 
+    // get idea and comment
+    Promise.all([db.query(SELECT_SINGLE_IDEA, [ideaId]), db.query(SELECT_SINGLE_COMMENT, [ideaId, commentId])]).then(resultSets => {
+        // get idea and comment
+        let idea
+        let comment
+        if (resultSets[0].rows.length === 1) {
+            idea = resultSets[0].rows[0]
+        } else {
+            return Promise.reject(new Error(`Unable to find idea with sfid ${ideaId}`))
+        }
+        if (resultSets[1].rows.length === 1) {
+            comment = resultSets[1].rows[0]
+        } else {
+            return Promise.reject(new Error(`Unable to find comment with sfid ${ideaId} and commentId ${commentId}`))
+        }
+
+        // create context
+        const ctx = Object.assign({
+            'idea': idea,
+            'comment': comment
+        }, req.cube_context)
+        return res.render('canvas', ctx)
+    })
 })
 
 /**
