@@ -22,7 +22,6 @@
 <script>
     $(document).ready(() => {
         $('#ideas-container').on('click', (event) => {
-            const id = event.target.id
             if (event.target.className.indexOf('ideas-comment-add') > 0) {
                 // build UI or comment
                 let parent = event.target.parentElement
@@ -32,10 +31,12 @@
                 let linkSubmit = document.createElement('a')
                 linkSubmit.href = "javascript:void(0)"
                 linkSubmit.className = 'ideas-comment-link ideas-comment-submit'
+                linkSubmit.id = event.target.id
                 linkSubmit.appendChild(document.createTextNode('Submit'))
                 let linkCancel = document.createElement('a')
                 linkCancel.href = "javascript:void(0)"
                 linkCancel.className = 'ideas-comment-link ideas-comment-cancel'
+                linkCancel.id = event.target.id
                 linkCancel.appendChild(document.createTextNode('Cancel'))
                 parent.appendChild(txt)
                 parent.appendChild(linkSubmit)
@@ -43,9 +44,11 @@
                 parent.appendChild(linkCancel)
                 
             } else if (event.target.className.indexOf('ideas-comment-cancel') > 0 || event.target.className.indexOf('ideas-comment-submit') > 0) {
+                let id = event.target.id
                 if (event.target.className.indexOf('ideas-comment-submit') > 0) {
                     // submit to server
                     let comment = event.target.parentElement.querySelector('textarea').value
+                    const id = event.target.id
                     fetch('/comment', {
                         method: 'POST',
                         headers: {
@@ -64,6 +67,7 @@
                 let linkAddComment = document.createElement('a')
                 linkAddComment.href = "javascript:void(0)"
                 linkAddComment.className = 'ideas-comment-link ideas-comment-add'
+                linkAddComment.id = id
                 linkAddComment.appendChild(document.createTextNode('Add Comment'))
                 parent.appendChild(linkAddComment)
             }
