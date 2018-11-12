@@ -219,7 +219,19 @@ app.use((req, res, next) => {
  * Middleware to always make sure we have authenticated the user.
  */
 app.use((req, res, next) => {
-    if (req.method === 'POST') {
+    if (req.method === 'POST' && req.originalUrl === '/canvas') {
+        // body coming as text
+        let payload
+        try {
+            payload = JSON.parse(req.body)
+        } catch (err) {
+            return next(new Error('Unable to parse signed_request JSON', err))
+        }
+        
+        // split and get payload
+        let obj = JSON.parse(Buffer.from(payload.signed_request.split('.')[1], 'base64').toString())
+        req.session.canvasPayload = obj
+        req.session.save()
         return next()
     }
     
@@ -234,20 +246,19 @@ app.use((req, res, next) => {
 })
 
 app.use((req, res, next) => {
-    if (req.method === 'POST') {
-        return next()
-    }
-    if (!req.session || !req.session.identity || !req.session.identity.custom_attributes) return next(new Error('Missing payload in session'))
+    if (!req.session || !req.session.canvasPayload || !req.session.identity || !req.session.identity.custom_attributes) return next(new Error('Missing payload in session'))
 
     // build context
     let ctx = {}
-    if (req.session.identity.custom_attributes.cube_branding === '0') {
+    if (req.session.canvasPayload || req.session.identity.custom_attributes.cube_branding === '0') {
         ctx.branding1 = true
         ctx.logo_filename = 'cube_logo1.png'
     } else {
         ctx.logo_filename = 'cube_logo2.png'
     }
-    ctx.identity = req.session.identity
+    ctx.identity = {
+        'display_name': req.session.identity ? req.session.identity.display_name : req.session.canvasPayload.context.user.fullName
+    }
     ctx.updated_timedate = formatDate()
     req.cube_context = ctx
     next()
@@ -305,13 +316,14 @@ app.post('/comment', (req, res) => {
 /**
  * Route for Salesforce Canvas App
  */
-app.post('/canvas', (req, res) => {
-    // get data from body
-    console.log(req.body)
-    console.log(req.headers)
-    console.log(req.originalUrl)
-    console.log(req.query)
-    res.status(200).send('ok')
+app.post('/canvas', (req, res, next) => {
+    // must have context in session
+    if (!req.session.canvasPayload) return next(new Error('No canvas context found in session'))
+
+    req.render('canvas', req.cube_context)
+    
+        
+
 })
 
 /**
@@ -356,6 +368,13 @@ app.get('/json/identity', (req, res) => {
  */
 app.get('/json/wellknown_config', (req, res) => {
     res.json(req.session.wellknown_config).end()
+})
+
+/**
+ * Route for JSON response - canvas payload.
+ */
+app.get('/json/canvas_payload', (req, res) => {
+    res.json(req.session.contextPayload).end()
 })
 
 app.use((err, req, res, next) => {
