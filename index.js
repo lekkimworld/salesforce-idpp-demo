@@ -293,14 +293,14 @@ app.get('/ideas', (req, res) => {
     db.query(SELECT_IDEAS).then(rs => {
         ctx.ideas = rs.rows
         let ideaIds = rs.rows.map(row => row.sfid)
-        console.log(`IdeaIds: ${ideaIds}`)
         return db.query(SELECT_COMMENT_COUNT, [ideaIds])
     }).then(rs => {
         rs.rows.forEach(row => {
-            console.log(rs.rows)
             let idea = ctx.ideas.filter(i => i.sfid === row.sfid)
-            console.log(idea)
             idea[0].commentCount = idea.length ? row.count : 0
+        })
+        ctx.ideas.forEach(idea => {
+            if (!idea.commentCount) idea.commentCount = 0
         })
         res.render('ideas', ctx)
     })
