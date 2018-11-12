@@ -222,9 +222,8 @@ app.use((req, res, next) => {
     if (req.method === 'POST' && req.originalUrl === '/canvas') {
         // body coming as text
         let payload
-        console.log(req.body)
         try {
-            payload = JSON.parse(req.body)
+            payload = JSON.parse(req.body.replace('signed_request:', '\'signed_request\':').replace(/'/g, '"'))
         } catch (err) {
             return next(new Error('Unable to parse signed_request JSON', err))
         }
