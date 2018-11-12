@@ -13,7 +13,7 @@ const bodyParser = require('body-parser')
 
 // SQL
 const SELECT_IDEAS = 'SELECT sfid, name, title__c, description__c FROM salesforce.Idea__c'
-const SELECT_COMMENT_COUNT = 'select sfid, count(*) as count from comments.comment where sfid IN ($1) and approved=\'1\' group by sfid'
+const SELECT_COMMENT_COUNT = 'select sfid, count(*) as count from comments.comment where sfid = ANY($1::character varying(18)) and approved=\'1\' group by sfid'
 
 // configuration from environment
 const OAUTH_CLIENT_ID = process.env.OAUTH_CLIENT_ID
@@ -293,11 +293,13 @@ app.get('/ideas', (req, res) => {
     db.query(SELECT_IDEAS).then(rs => {
         ctx.ideas = rs.rows
         let ideaIds = rs.rows.map(row => row.sfid)
-        return db.query(SELECT_COMMENT_COUNT, [ideaIds.join(',')])
+        console.log(`IdeaIds: ${ideaIds}`)
+        return db.query(SELECT_COMMENT_COUNT, [ideaIds])
     }).then(rs => {
         rs.rows.forEach(row => {
             console.log(rs.rows)
             let idea = ctx.ideas.filter(i => i.sfid === row.sfid)
+            console.log(idea)
             idea[0].commentCount = idea.length ? row.count : 0
         })
         res.render('ideas', ctx)
