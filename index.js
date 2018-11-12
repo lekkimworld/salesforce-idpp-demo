@@ -220,7 +220,7 @@ app.use((req, res, next) => {
  */
 app.use((req, res, next) => {
     if (req.method === 'POST' && req.originalUrl === '/canvas') {
-        // body coming as text but replace quotes to handle stange json from SF
+        // body coming as text as eval due to stange json from SF
         let payload
         try {
             payload = eval(req.body)
@@ -246,7 +246,7 @@ app.use((req, res, next) => {
 })
 
 app.use((req, res, next) => {
-    if (!req.session || !req.session.canvasPayload || !req.session.identity || !req.session.identity.custom_attributes) return next(new Error('Missing payload in session'))
+    if (!req.session && !req.session.canvasPayload || (!req.session && !req.session.identity && !req.session.identity.custom_attributes)) return next(new Error('Missing payload in session'))
 
     // build context
     let ctx = {}
