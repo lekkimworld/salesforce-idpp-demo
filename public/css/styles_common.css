@@ -29,3 +29,18 @@
 body {
   padding-top: 4.0rem;
 }
+
+.branding-bg {
+  background-color: rgb(31, 112, 184);
+}
+
+.navbar-dark .navbar-brand {
+  color: #fff;
+}
+.navbar-dark .navbar-nav .nav-link {
+  color: #fff;
+}
+
+.ideas-icon-color {
+  color: #fff;
+}
