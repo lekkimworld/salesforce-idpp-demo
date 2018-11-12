@@ -21,6 +21,7 @@ const SF_LOGIN_URL = process.env.SF_LOGIN_URL || 'https://login.salesforce.com'
 // configure app
 const app = express()
 app.use(bodyParser.json())
+app.use(bodyParser.urlencoded())
 app.use(express.static(path.join(__dirname, 'public')))
 app.engine('handlebars', exphbs({defaultLayout: 'main'}))
 app.set('view engine', 'handlebars')
