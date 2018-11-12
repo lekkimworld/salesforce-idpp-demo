@@ -46,6 +46,7 @@
 
 		<div class="collapse navbar-collapse" id="navbarsExampleDefault">
 			<ul class="navbar-nav mr-auto">
+				{{#if showMenu}}
 				<li class="nav-item {{home_active}}">
 					<a class="nav-link" href="/">Home</a>
 				</li>
@@ -55,7 +56,6 @@
 				<li class="nav-item {{about_active}}">
 					<a href="/about" class="nav-link">About</a>
 				</li>
-				{{#if showLogout}}
 				<li class="nav-item {{logout_active}}">
 					<a href="/logout" class="nav-link">Logout</a>
 				</li>
@@ -66,10 +66,12 @@
 	</nav>
 
 	<div class="container-fluid ">
+		{{#if showMenu}}
 		<span class="clearfix">
 			<i class="float-left">Updated: {{updated_timedate}}</i>
 			<a href="" class="float-right color-black"><i class="fa fa-redo fa-2x" aria-hidden="true"></i></a>
 		</span>
+		{{#if showMenu}}
 		{{{body}}}
 	</div>
 	
