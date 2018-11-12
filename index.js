@@ -47,6 +47,7 @@ try {
 // get database connection pool
 const db = (function() {
     if (process.env.DATABASE_URL) {
+        console.log('DATABASE_URL configured - using live database')
         return new Pool({
             'connectionString': process.env.DATABASE_URL,
             'ssl': true
@@ -306,6 +307,7 @@ app.post('/comment', (req, res) => {
 app.post('/canvas', (req, res) => {
     // get data from body
     console.log(req.body)
+    console.log(req.headers)
     console.log(req.originalUrl)
     console.log(req.query)
     res.status(200).send('ok')
