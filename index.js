@@ -218,9 +218,6 @@ app.use((req, res, next) => {
  */
 app.use((req, res, next) => {
     if (req.method === 'POST') {
-        console.log(req.body)
-        console.log(req)
-        console.log(req.text)
         return next()
     }
     
@@ -236,7 +233,6 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
     if (req.method === 'POST') {
-        console.log(req.body)
         return next()
     }
     if (!req.session || !req.session.identity || !req.session.identity.custom_attributes) return next(new Error('Missing payload in session'))
@@ -310,7 +306,8 @@ app.post('/comment', (req, res) => {
 app.post('/canvas', (req, res) => {
     // get data from body
     console.log(req.body)
-    console.log(req.query.signed_request)
+    console.log(req.originalUrl)
+    console.log(req.query)
     res.status(200).send('ok')
 })
 
