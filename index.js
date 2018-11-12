@@ -14,6 +14,7 @@ const bodyParser = require('body-parser')
 // SQL
 const SELECT_IDEAS = 'SELECT sfid, name, title__c, description__c FROM salesforce.Idea__c'
 const SELECT_COMMENT_COUNT = 'select sfid, count(*) as count from comments.comment where sfid = ANY($1::character varying(18)[]) and approved=\'1\' group by sfid'
+const INSERT_COMMENT = 'insert into comments.comment (sfid, commentId, approved, comment) values ($1, $2, $3, $4)'
 
 // configuration from environment
 const OAUTH_CLIENT_ID = process.env.OAUTH_CLIENT_ID
@@ -315,24 +316,41 @@ app.post('/comment', (req, res) => {
     const comment = req.body.comment
     const commentId = uuid()
 
-    const url = `${req.session.identity.urls.rest.replace('{version}', '44.0')}sobjects/Comment_Event_Storage__c`
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${req.session.payload.access_token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            'Comment__c': comment,
-            'CommentId__c': commentId,
-            'RecordId__c': recordId
+    // insert into db
+    db.query("BEGIN").then(() => {
+        db.query(INSERT_COMMENT, [recordId, commentId, '0', comment])
+    }).then(() => {
+        // send to server
+        const url = `${req.session.identity.urls.rest.replace('{version}', '44.0')}sobjects/Comment_Event_Storage__c`
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${req.session.payload.access_token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'Comment__c': comment,
+                'CommentId__c': commentId,
+                'RecordId__c': recordId
+            })
         })
     }).then(res => {
         return res.json()
     }).then(obj => {
-        res.status(201).send({
+        if (!obj.id) return Promise.reject()
+        return res.status(201).send({
             'status': 'OK',
             'id': obj.id
+        })
+    }).then(() => {
+        return db.query('COMMIT')
+
+    }).catch(err => {
+        db.query('ROLLBACK').then(() => {
+            return res.status(500).send({
+                'status': 'ERROR',
+                'message': err.message
+            })
         })
     })
 })
