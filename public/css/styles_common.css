@@ -50,6 +50,6 @@ body {
   text-shadow: -1px 0 #000, 0 1px #000, 1px 0 #000, 0 -1px #000;
 }
 
-a.idea-add-comment {
+.ideas-comment-link {
   font-size: 0.8rem;
 }

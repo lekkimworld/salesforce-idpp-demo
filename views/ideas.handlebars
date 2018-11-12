@@ -5,12 +5,14 @@
             <div class="col-lg-2 col-md-4 col-sm-12">
                 <div class="idea-title">{{this.title__c}}</div>
             </div>
-            <div class="col-lg-7 col-md-8 col-sm-12">
+            <div class="col-lg-5 col-md-8 col-sm-12">
                 <div class="idea-description">{{this.description__c}}</div>
             </div>
-            <div class="col-lg-2 col-md-12 col-sm-12">
+            <div class="col-lg-4 col-md-12 col-sm-12">
                 <div>{{this.commentCount}} <span class="fa fa-comment fa-1x ideas-icon-color ideas-icon-border" aria-hidden="true">&nbsp;</span></div>
-                <a href="javascript:void(0)" class="idea-add-comment" id="{{this.sfid}}">Add comment</a>
+                <div id="comment_container_{{this.sfid}}">
+                    <a href="javascript:void(0)" class="ideas-comment-link ideas-comment-add" id="{{this.sfid}}">Add comment</a>
+                </div>
             </div>
         </div>
     </div>
@@ -21,17 +23,50 @@
     $(document).ready(() => {
         $('#ideas-container').on('click', (event) => {
             const id = event.target.id
-            console.log(id)
-            fetch('/comment', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    'id': id,
-                    'comment': `This is a comment (${Date.now()})`
-                })
-            })
+            if (event.target.className.indexOf('ideas-comment-add') > 0) {
+                // build UI or comment
+                let parent = event.target.parentElement
+                parent.innerHTML = ''
+                let txt = document.createElement('textarea')
+                txt.style.width = '100%'
+                let linkSubmit = document.createElement('a')
+                linkSubmit.href = "javascript:void(0)"
+                linkSubmit.className = 'ideas-comment-link ideas-comment-submit'
+                linkSubmit.appendChild(document.createTextNode('Submit'))
+                let linkCancel = document.createElement('a')
+                linkCancel.href = "javascript:void(0)"
+                linkCancel.className = 'ideas-comment-link ideas-comment-cancel'
+                linkCancel.appendChild(document.createTextNode('Cancel'))
+                parent.appendChild(txt)
+                parent.appendChild(linkSubmit)
+                parent.appendChild(document.createTextNode(' | '))
+                parent.appendChild(linkCancel)
+                
+            } else if (event.target.className.indexOf('ideas-comment-cancel') > 0 || event.target.className.indexOf('ideas-comment-submit') > 0) {
+                if (event.target.className.indexOf('ideas-comment-submit') > 0) {
+                    // submit to server
+                    let comment = event.target.parentElement.querySelector('textarea').value
+                    fetch('/comment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            'id': id,
+                            'comment': comment
+                        })
+                    })
+                }
+
+                // rebuild ui
+                let parent = event.target.parentElement
+                parent.innerHTML = ''
+                let linkAddComment = document.createElement('a')
+                linkAddComment.href = "javascript:void(0)"
+                linkAddComment.className = 'ideas-comment-link ideas-comment-add'
+                linkAddComment.appendChild(document.createTextNode('Add Comment'))
+                parent.appendChild(linkAddComment)
+            }
         })
     })
 </script>
