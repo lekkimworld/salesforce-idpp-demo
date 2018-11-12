@@ -321,7 +321,7 @@ app.post('/canvas', (req, res, next) => {
     // must have context in session
     if (!req.session.canvasPayload) return next(new Error('No canvas context found in session'))
 
-    console.log(req.session.canvasPayload)
+    console.log(req.session.canvasPayload.environment.parameters)
     res.render('canvas', req.cube_context)
     
         
