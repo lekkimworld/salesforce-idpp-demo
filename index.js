@@ -219,6 +219,8 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
     if (req.method === 'POST') {
         console.log(req.body)
+        console.log(req)
+        console.log(req.text)
         return next()
     }
     
