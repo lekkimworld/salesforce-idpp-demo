@@ -222,6 +222,7 @@ app.use((req, res, next) => {
     if (req.method === 'POST' && req.originalUrl === '/canvas') {
         // body coming as text
         let payload
+        console.log(req.body)
         try {
             payload = JSON.parse(req.body)
         } catch (err) {
