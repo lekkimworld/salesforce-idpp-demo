@@ -2,16 +2,15 @@
     {{#each ideas}}
     <div class="col-lg-11 col-md-11 col-sm-11 idea">
         <div class="row">
-            <div class="col-lg-4 col-md-4 col-sm-12">
+            <div class="col-lg-2 col-md-4 col-sm-12">
                 <div class="idea-title">{{this.title__c}}</div>
             </div>
-            <div class="col-lg-8 col-md-8 col-sm-12">
+            <div class="col-lg-7 col-md-8 col-sm-12">
                 <div class="idea-description">{{this.description__c}}</div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12">
-                <a href="javascript:void(0)" id="{{this.sfid}}">Comment</a>
+            <div class="col-lg-2 col-md-12 col-sm-12">
+                <div>{{this.commentCount}} <span class="fa fa-comment fa-1x ideas-icon-color ideas-icon-border" aria-hidden="true">&nbsp;</span></div>
+                <a href="javascript:void(0)" class="idea-add-comment" id="{{this.sfid}}">Add comment</a>
             </div>
         </div>
     </div>

@@ -11,6 +11,10 @@ const path = require('path')
 const exphbs = require("express-handlebars")
 const bodyParser = require('body-parser')
 
+// SQL
+const SELECT_IDEAS = 'SELECT sfid, name, title__c, description__c FROM salesforce.Idea__c'
+const SELECT_COMMENT_COUNT = 'select sfid, count(*) as count from comments.comment where sfid IN ($1) and approved=\'1\' group by sfid'
+
 // configuration from environment
 const OAUTH_CLIENT_ID = process.env.OAUTH_CLIENT_ID
 const OAUTH_CLIENT_SECRET = process.env.OAUTH_CLIENT_SECRET
@@ -56,15 +60,24 @@ const db = (function() {
     } else {
         // return stub
         return {
-            'query': () => {
-                return Promise.resolve({
-                    rows: [{
-                        'name': 'I-000001',
-                        'sfid': 'a001t000002Xx4LAAS',
-                        'title__c': 'Make cubes round',
-                        'description__c': 'I really like cubes but really like them to be rounder. Maybe like an oval?'
-                    }]
-                })
+            'query': (query) => {
+                if (query === SELECT_IDEAS) {
+                    return Promise.resolve({
+                        rows: [{
+                            'name': 'I-000001',
+                            'sfid': 'a001t000002Xx4LAAS',
+                            'title__c': 'Make cubes round',
+                            'description__c': 'I really like cubes but really like them to be rounder. Maybe like an oval?'
+                        }]
+                    })
+                } else if (query === SELECT_COMMENT_COUNT) {
+                    return Promise.resolve({
+                        rows: [{
+                            'sfid': 'a001t000002Xx4LAAS',
+                            'count': 3
+                        }]
+                    })
+                }
             },
             'end': () => {}
         }
@@ -277,8 +290,17 @@ app.get('/', (req, res) => {
  */
 app.get('/ideas', (req, res) => {
     const ctx = Object.assign({}, req.cube_context)
-    db.query('SELECT sfid, name, title__c, description__c FROM salesforce.Idea__c').then(rs => {
+    db.query(SELECT_IDEAS).then(rs => {
         ctx.ideas = rs.rows
+        let ideaIds = rs.rows.map(row => row.sfid)
+        return db.query(SELECT_COMMENT_COUNT, ideaIds)
+    }).then(rs => {
+        rs.rows.forEach(row => {
+            let idea = ctx.ideas.filter(i => i.sfid === row.sfid)
+            if (idea.length === 1) {
+                idea[0].commentCount = row.count
+            }
+        })
         res.render('ideas', ctx)
     })
 })
