@@ -66,12 +66,13 @@
 	</nav>
 
 	<div class="container-fluid ">
-		{{#if showMenu}}
 		<span class="clearfix">
 			<i class="float-left">Updated: {{updated_timedate}}</i>
+			{{#if showMenu}}
 			<a href="" class="float-right color-black"><i class="fa fa-redo fa-2x" aria-hidden="true"></i></a>
+			{{/if}}
 		</span>
-		{{/if}}
+		
 		{{{body}}}
 	</div>
 	
