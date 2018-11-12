@@ -223,9 +223,7 @@ app.use((req, res, next) => {
         // body coming as text but replace quotes to handle stange json from SF
         let payload
         try {
-            console.log(req.body)
-            console.log(req.body.replace('signed_request:', '\'signed_request\':').replace(/'/g, '"').replace(/\n/g, ''))
-            payload = JSON.parse(req.body.replace('signed_request:', '\'signed_request\':').replace(/'/g, '"').replace(/\n/g, ''))
+            payload = eval(req.body)
         } catch (err) {
             return next(new Error('Unable to parse signed_request JSON', err))
         }
