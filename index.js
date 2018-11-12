@@ -256,6 +256,7 @@ app.use((req, res, next) => {
     } else {
         ctx.logo_filename = 'cube_logo2.png'
     }
+    ctx.canvasApp = req.session.canvasPayload ? true : false
     ctx.identity = {
         'display_name': req.session.identity ? req.session.identity.display_name : req.session.canvasPayload.context.user.fullName
     }
