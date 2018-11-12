@@ -217,8 +217,8 @@ app.use((req, res, next) => {
  * Middleware to always make sure we have authenticated the user.
  */
 app.use((req, res, next) => {
-    if (req.query.signed_request) {
-        console.log(req.query.signed_request)
+    if (req.method === 'POST') {
+        console.log(req.body)
         return next()
     }
     
@@ -233,8 +233,8 @@ app.use((req, res, next) => {
 })
 
 app.use((req, res, next) => {
-    if (req.query.signed_request) {
-        console.log(req.query.signed_request)
+    if (req.method === 'POST') {
+        console.log(req.body)
         return next()
     }
     if (!req.session || !req.session.identity || !req.session.identity.custom_attributes) return next(new Error('Missing payload in session'))
