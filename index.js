@@ -13,7 +13,7 @@ const bodyParser = require('body-parser')
 
 // SQL
 const SELECT_IDEAS = 'SELECT sfid, name, title__c, description__c FROM salesforce.Idea__c'
-const SELECT_COMMENT_COUNT = 'select sfid, count(*) as count from comments.comment where sfid = ANY($1::character varying(18)) and approved=\'1\' group by sfid'
+const SELECT_COMMENT_COUNT = 'select sfid, count(*) as count from comments.comment where sfid = ANY($1::character varying(18)[]) and approved=\'1\' group by sfid'
 
 // configuration from environment
 const OAUTH_CLIENT_ID = process.env.OAUTH_CLIENT_ID
