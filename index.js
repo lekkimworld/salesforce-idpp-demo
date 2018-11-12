@@ -59,8 +59,8 @@ const db = (function() {
             'query': () => {
                 return Promise.resolve({
                     rows: [{
-                        name: 'I-000001',
-                        id: 'a001t000002Xx4LAAS',
+                        'name': 'I-000001',
+                        'sfid': 'a001t000002Xx4LAAS',
                         'title__c': 'Make cubes round',
                         'description__c': 'I really like cubes but really like them to be rounder. Maybe like an oval?'
                     }]
@@ -250,7 +250,7 @@ app.use((req, res, next) => {
 
     // build context
     let ctx = {}
-    if (req.session.canvasPayload || req.session.identity.custom_attributes.cube_branding === '0') {
+    if (req.session.canvasPayload || req.session.identity.custom_attributes.cube_branding === '1') {
         ctx.branding1 = true
         ctx.logo_filename = 'cube_logo1.png'
     } else {
@@ -276,7 +276,7 @@ app.get('/', (req, res) => {
  */
 app.get('/ideas', (req, res) => {
     const ctx = Object.assign({}, req.cube_context)
-    db.query('SELECT Id, Name, Title__c, Description__c FROM salesforce.Idea__c').then(rs => {
+    db.query('SELECT sfid, name, title__c, description__c FROM salesforce.Idea__c').then(rs => {
         ctx.ideas = rs.rows
         res.render('ideas', ctx)
     })
@@ -320,7 +320,7 @@ app.post('/canvas', (req, res, next) => {
     // must have context in session
     if (!req.session.canvasPayload) return next(new Error('No canvas context found in session'))
 
-    req.render('canvas', req.cube_context)
+    res.render('canvas', req.cube_context)
     
         
 
