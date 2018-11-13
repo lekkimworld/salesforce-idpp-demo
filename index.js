@@ -318,25 +318,27 @@ app.post('/comment', (req, res) => {
     // get data from body
     const recordId = req.body.id
     const comment = req.body.comment
-    const commentId = uuid()
+    let commentId = uuid()
 
     // insert into db
     db.query("BEGIN").then(() => {
+        console.log(`Inserting record with commentId ${commentId} and recordId ${recordId}`)
         db.query(INSERT_COMMENT, [recordId, commentId, '0', comment])
     }).then(() => {
         // send to server
         const url = `${req.session.identity.urls.rest.replace('{version}', '44.0')}sobjects/Comment_Event_Storage__c`
+        const payload = {
+            'Comment__c': comment,
+            'CommentId__c': commentId,
+            'RecordId__c': recordId
+        }
         return fetch(url, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${req.session.payload.access_token}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                'Comment__c': comment,
-                'CommentId__c': commentId,
-                'RecordId__c': recordId
-            })
+            body: JSON.stringify(payload)
         })
     }).then(res => {
         return res.json()
