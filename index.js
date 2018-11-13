@@ -416,7 +416,10 @@ app.post('/canvas', (req, res, next) => {
             'idea': idea,
             'comment': comment
         }, req.cube_context)
-        return res.render('canvas', ctx)
+        res.render('canvas', ctx)
+
+    }).catch(err => {
+        next(err)
     })
 })
 
