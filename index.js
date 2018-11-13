@@ -365,8 +365,11 @@ app.post('/comment', (req, res) => {
 app.put('/comment/approve', (req, res) => {
     let obj = req.body
     let commentId = obj.commentId
-
+    console.log(commentId)
+    
+    // approve comment
     db.query(UPDATE_SINGLE_COMMENT, [commentId]).then(rs => {
+        console.log(rs)
         res.status(201).send({
             'status': 'OK'
         })
