@@ -399,6 +399,7 @@ app.post('/canvas', (req, res, next) => {
     // get idea and comment
     Promise.all([db.query(SELECT_SINGLE_IDEA, [ideaId]), db.query(SELECT_SINGLE_COMMENT, [ideaId, commentId])]).then(resultSets => {
         // get idea and comment
+        console.log(`Did SQL to fetch idea and commnet`)
         let idea
         let comment
         if (resultSets[0].rows.length === 1) {
@@ -417,6 +418,7 @@ app.post('/canvas', (req, res, next) => {
             'idea': idea,
             'comment': comment
         }, req.cube_context)
+        console.log(`Create canvas context (${JSON.stringify(ctx)})`)
         res.render('canvas', ctx)
 
     }).catch(err => {
