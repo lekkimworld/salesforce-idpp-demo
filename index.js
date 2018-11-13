@@ -318,7 +318,7 @@ app.post('/comment', (req, res) => {
     // get data from body
     const recordId = req.body.id
     const comment = req.body.comment
-    const commentId = uuid()
+    const commentId = 'commentid_1'
     console.log(`Created UUID ${commentId} for comment id`)
 
     // insert into db
