@@ -350,13 +350,15 @@ app.post('/comment', (req, res) => {
             'id': obj.id
         })
     }).then(() => {
+        console.log('Issuing COMMIT')
         return db.query('COMMIT;').then(rs => {
-            console.log(`Comment commit rs ${rs}`)
+            console.log(`Comment commit rs ${JSON.stringify(rs)}`)
         })
 
     }).catch(err => {
-        db.query('ROLLBACK;').then(() => {
-            return res.status(500).send({
+        console.log(`Error ${err.message} - issuing ROLLBACK`)
+        db.query('ROLLBACK;').then(rs => {
+            res.status(500).send({
                 'status': 'ERROR',
                 'message': err.message
             })
@@ -392,8 +394,7 @@ app.post('/canvas', (req, res, next) => {
     let params = req.session.canvasPayload.context.environment.parameters
     let ideaId = params.ideaId
     let commentId = params.commentId
-    console.log('Canvas payload')
-    console.log(params)
+    console.log(`Received canvas payload - ideaId ${ideaId} and commentId ${commentId}`)
 
     // get idea and comment
     Promise.all([db.query(SELECT_SINGLE_IDEA, [ideaId]), db.query(SELECT_SINGLE_COMMENT, [ideaId, commentId])]).then(resultSets => {
