@@ -17,7 +17,7 @@ const SELECT_SINGLE_IDEA = 'SELECT sfid, name, title__c, description__c FROM sal
 const SELECT_COMMENT_COUNT = 'select sfid, count(*) as count from comments.comment where sfid = ANY($1::character varying(18)[]) and approved=\'1\' group by sfid'
 const INSERT_COMMENT = 'insert into comments.comment (sfid, commentId, approved, comment) values ($1, $2, $3, $4)'
 const SELECT_SINGLE_COMMENT = 'select sfid, commentId, approved, comment from comments.comment where sfid=$1 AND commentId=$2'
-const UPDATE_SINGLE_COMMENT = 'update comments.comment set approve=\'1\' WHERE commentId=$1'
+const UPDATE_SINGLE_COMMENT = 'update comments.comment set approved=\'1\' WHERE commentId=$1'
 
 // configuration from environment
 const OAUTH_CLIENT_ID = process.env.OAUTH_CLIENT_ID

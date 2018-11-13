@@ -18,6 +18,11 @@
   font-size: 1em;
 }
 
+.idea .idea-comment {
+  font-size: 1.0em;
+  font-style: italic; 
+}
+
 .idea .idea-id {
   font-size: 0.8em;
   font-style: italic; 
