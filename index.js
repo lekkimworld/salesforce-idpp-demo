@@ -321,7 +321,7 @@ app.post('/comment', (req, res) => {
     let commentId = uuid()
 
     // insert into db
-    db.query("BEGIN").then(() => {
+    db.query("BEGIN;").then(() => {
         console.log(`Inserting record with commentId ${commentId} and recordId ${recordId}`)
         db.query(INSERT_COMMENT, [recordId, commentId, '0', comment])
     }).then(() => {
@@ -343,16 +343,19 @@ app.post('/comment', (req, res) => {
     }).then(res => {
         return res.json()
     }).then(obj => {
+        console.log(`Received JSON back from server (${obj})`)
         if (!obj.id) return Promise.reject()
-        return res.status(201).send({
+        res.status(201).send({
             'status': 'OK',
             'id': obj.id
         })
     }).then(() => {
-        return db.query('COMMIT')
+        return db.query('COMMIT;').then(rs => {
+            console.log(`Comment commit rs ${rs}`)
+        })
 
     }).catch(err => {
-        db.query('ROLLBACK').then(() => {
+        db.query('ROLLBACK;').then(() => {
             return res.status(500).send({
                 'status': 'ERROR',
                 'message': err.message
