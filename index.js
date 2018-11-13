@@ -236,6 +236,7 @@ app.use((req, res, next) => {
  * Middleware to always make sure we have authenticated the user.
  */
 app.use((req, res, next) => {
+    if (req.session.canvasPayload) return next()
     if (req.method === 'POST' && req.originalUrl === '/canvas') {
         // body coming as text as eval due to stange json from SF
         let payload
