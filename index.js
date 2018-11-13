@@ -387,6 +387,8 @@ app.post('/canvas', (req, res, next) => {
     let params = req.session.canvasPayload.context.environment.parameters
     let ideaId = params.ideaId
     let commentId = params.commentId
+    console.log('Canvas payload')
+    console.log(params)
 
     // get idea and comment
     Promise.all([db.query(SELECT_SINGLE_IDEA, [ideaId]), db.query(SELECT_SINGLE_COMMENT, [ideaId, commentId])]).then(resultSets => {

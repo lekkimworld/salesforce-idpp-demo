@@ -48,14 +48,15 @@
                 if (event.target.className.indexOf('ideas-comment-submit') > 0) {
                     // submit to server
                     let comment = event.target.parentElement.querySelector('textarea').value
-                    const id = event.target.id
+                    const sfid = event.target.id
+                    console.log(`Submitting comment (${comment}) with sfid ${sfid}`)
                     fetch('/comment', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            'id': id,
+                            'id': sfid,
                             'comment': comment
                         })
                     })
