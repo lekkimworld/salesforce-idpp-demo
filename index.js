@@ -321,10 +321,7 @@ app.post('/comment', (req, res) => {
     let commentId = uuid()
 
     // insert into db
-    db.query("BEGIN;").then(() => {
-        console.log(`Inserting record with commentId ${commentId} and recordId ${recordId}`)
-        db.query(INSERT_COMMENT, [recordId, commentId, '0', comment])
-    }).then(() => {
+    db.query(INSERT_COMMENT, [recordId, commentId, '0', comment]).then(() => {
         // send to server
         const url = `${req.session.identity.urls.rest.replace('{version}', '44.0')}sobjects/Comment_Event_Storage__c`
         const payload = {
@@ -349,19 +346,11 @@ app.post('/comment', (req, res) => {
             'status': 'OK',
             'id': obj.id
         })
-    }).then(() => {
-        console.log('Issuing COMMIT')
-        return db.query('COMMIT;').then(rs => {
-            console.log(`Comment commit rs ${JSON.stringify(rs)}`)
-        })
-
     }).catch(err => {
         console.log(`Error ${err.message} - issuing ROLLBACK`)
-        db.query('ROLLBACK;').then(rs => {
-            res.status(500).send({
-                'status': 'ERROR',
-                'message': err.message
-            })
+        res.status(500).send({
+            'status': 'ERROR',
+            'message': err.message
         })
     })
 })
@@ -418,7 +407,7 @@ app.post('/canvas', (req, res, next) => {
             'idea': idea,
             'comment': comment
         }, req.cube_context)
-        console.log(`Create canvas context (${JSON.stringify(ctx)})`)
+        console.log(`Created canvas context (${JSON.stringify(ctx)})`)
         res.render('canvas', ctx)
 
     }).catch(err => {
