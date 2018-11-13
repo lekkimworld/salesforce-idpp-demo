@@ -318,7 +318,8 @@ app.post('/comment', (req, res) => {
     // get data from body
     const recordId = req.body.id
     const comment = req.body.comment
-    let commentId = uuid()
+    const commentId = uuid()
+    console.log(`Created UUID ${commentId} for comment id`)
 
     // insert into db
     db.query(INSERT_COMMENT, [recordId, commentId, '0', comment]).then(() => {
@@ -329,6 +330,7 @@ app.post('/comment', (req, res) => {
             'CommentId__c': commentId,
             'RecordId__c': recordId
         }
+        console.log(`Created comment payload (${JSON.stringify(payload)})`)
         return fetch(url, {
             method: 'POST',
             headers: {
