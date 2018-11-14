@@ -247,6 +247,7 @@ app.use((req, res, next) => {
         }
         
         // split and get payload
+        console.log(payload.signed_request)
         let obj = JSON.parse(Buffer.from(payload.signed_request.split('.')[1], 'base64').toString())
         req.session.canvasPayload = obj
         req.session.save()
