@@ -239,6 +239,8 @@ app.use((req, res, next) => {
     if (req.session.canvasPayload) return next()
     if (req.method === 'POST' && req.originalUrl === '/canvas') {
         // body coming as text as eval due to stange json from SF
+        console.log(`Salesforce /canvas POST: ${req.body}`)
+        
         let payload
         try {
             payload = eval(req.body)
