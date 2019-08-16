@@ -13,17 +13,17 @@
   "author": "Mikkel Flindt Heisterberg (mheisterberg@salesforce.com)",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.18.3",
-    "dotenv": "^6.1.0",
-    "express": "^4.16.4",
-    "express-handlebars": "^3.0.0",
-    "express-session": "^1.15.6",
-    "form-data": "^2.3.3",
-    "moment-timezone": "^0.5.23",
-    "njwt": "^0.4.0",
-    "node-fetch": "^2.2.1",
+    "body-parser": "^1.19.0",
+    "dotenv": "^6.2.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^3.1.0",
+    "express-session": "^1.16.2",
+    "form-data": "^2.5.0",
+    "moment-timezone": "^0.5.26",
+    "njwt": "^0.4.1",
+    "node-fetch": "^2.6.0",
     "node-jwk": "^0.1.0",
-    "pg": "^7.6.1",
+    "pg": "^7.12.1",
     "uuid": "^3.3.2"
   }
 }
